@@ -1,25 +1,39 @@
-set bound to {}
 tell application "Slack"
-	# 全ウィンドウループ
-	repeat with w in windows
-		# windowの名前が電話の場合
-		# get properties of w
-		if (count my findText(get name of w, "コール")) > 0 then
-			activate
-			# コールウィンドウを最前面に持ってくる
-			set index of w to 1
-			# マイクON,OFFキーを入力
-			set bound to bounds of w
-			delay 1
+	activate
+end tell
+
+set listIndex to 0
+set callMatch to false
+set menuWindowIndex to 7
+tell application "System Events"
+	tell process "Slack"
+		# ウィンドウメニューリスト取得
+		set menuWindowList to name of every menu item of menu 1 of menu bar item menuWindowIndex of menu bar 1
+		log menuWindowList
+		# ウィンドウのメニューリストからコールを精査
+		repeat with l in menuWindowList
+			set listName to l as string
+			set listIndex to listIndex + 1
+			# slackコールのウィンドウの存在確認
+			if (count my findText(listName, "コール")) > 0 then
+				set callMatch to true
+				exit repeat
+			end if
+		end repeat
+		# slackコールのウィンドウが存在した場合
+		if callMatch then
+			# メニューからウィンドウを選択
+			click menu bar 1's menu bar item menuWindowIndex
+			click menu bar 1's menu bar item menuWindowIndex's menu 1's menu item listIndex
+			# マイクOFF
 			tell application "System Events"
-				delay 1
-				click at {(item 1 of bound) + 100, (item 2 of bound) + 10}
-				delay 1
+				delay 0.5
 				keystroke "m"
 			end tell
 		end if
-	end repeat
+	end tell
 end tell
+
 
 # 文字列検索用関数
 on findText(theText, serchStr)
