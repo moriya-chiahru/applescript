@@ -9,7 +9,6 @@ tell application "System Events"
 	tell process "Slack"
 		# ウィンドウメニューリスト取得
 		set menuWindowList to name of every menu item of menu 1 of menu bar item menuWindowIndex of menu bar 1
-		log menuWindowList
 		# ウィンドウのメニューリストからコールを精査
 		repeat with l in menuWindowList
 			set listName to l as string
